@@ -3,7 +3,7 @@ import { RegistrationPage } from "../pages/NewUserPage.js";
 
 test.describe("Registration Form Tests", () => {
 
-  test("Registration: Add new user to table", async ({ page }) => {
+  test("Users management: Add new user to table", async ({ page }) => {
     const registrationPage = new RegistrationPage(page);
     const testUser = {
       firstName: "Alex",
@@ -33,7 +33,7 @@ test.describe("Registration Form Tests", () => {
     expect(userData?.department).toBe(testUser.department);
   });
 
-  test("Registration: Edit existing user", async ({ page }) => {
+  test("Users management: Edit existing user", async ({ page }) => {
     const registrationPage = new RegistrationPage(page);
     await registrationPage.goto("webtables");
 
@@ -64,7 +64,7 @@ test.describe("Registration Form Tests", () => {
     expect(updatedUser?.department).toBe('IT Security');
   });
 
-  test("Registration: Delete user from table", async ({ page }) => {
+  test("Users management: Delete user from table", async ({ page }) => {
     const registrationPage = new RegistrationPage(page);
     await registrationPage.goto("webtables");
 
@@ -90,7 +90,7 @@ test.describe("Registration Form Tests", () => {
     expect(await registrationPage.isUserVisible(testUser.email)).toBe(false);
   });
 
-  test("Registration: Search for user", async ({ page }) => {
+  test("Users management: Search for user", async ({ page }) => {
     const registrationPage = new RegistrationPage(page);
     await registrationPage.goto("webtables");
 
