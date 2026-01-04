@@ -1,91 +1,119 @@
+import { newUserSelectors } from "../selectors/newUser.selectors.js";
+import type { UserFormData } from "../data/users.js";
 import { BasePage } from "./BasePage.js";
 
 export class RegistrationPage extends BasePage {
-  addUserBtn = '#addNewRecordButton';
+  async open() {
+    await this.goto("webtables");
+    await this.addUserButton.waitFor({ state: "visible", timeout: 10000 });
+  }
 
-  firstNameInput = '#firstName';
-  lastNameInput = '#lastName';
-  emailInput = '#userEmail';
-  ageInput = '#age';
-  salaryInput = '#salary';
-  departmentInput = '#department';
-  submitBtn = '#submit';
+  get addUserButton() {
+    return this.page.locator(newUserSelectors.addUserButton);
+  }
 
-  resultRows = '.rt-tr-group';
+  get firstNameInput() {
+    return this.page.locator(newUserSelectors.firstNameInput);
+  }
 
-  async goto(path: string) {
-    await this.page.goto(`https://demoqa.com/${path}`);
-    await this.page.waitForSelector(this.addUserBtn, { state: 'visible', timeout: 10000 });
+  get lastNameInput() {
+    return this.page.locator(newUserSelectors.lastNameInput);
+  }
+
+  get emailInput() {
+    return this.page.locator(newUserSelectors.emailInput);
+  }
+
+  get ageInput() {
+    return this.page.locator(newUserSelectors.ageInput);
+  }
+
+  get salaryInput() {
+    return this.page.locator(newUserSelectors.salaryInput);
+  }
+
+  get departmentInput() {
+    return this.page.locator(newUserSelectors.departmentInput);
+  }
+
+  get submitButton() {
+    return this.page.locator(newUserSelectors.submitButton);
+  }
+
+  get searchInput() {
+    return this.page.locator(newUserSelectors.searchInput);
+  }
+
+  get tableRows() {
+    return this.page.locator(newUserSelectors.tableRow);
+  }
+
+  get tableCells() {
+    return this.page.locator(newUserSelectors.tableCell);
+  }
+
+  userRow(email: string) {
+    return this.tableRows.filter({ hasText: email });
   }
 
   async openAddUserModal() {
-    await this.page.click(this.addUserBtn);
-    await this.page.waitForSelector(this.firstNameInput, { state: 'visible', timeout: 5000 });
+    await this.addUserButton.click();
+    await this.firstNameInput.waitFor({ state: "visible", timeout: 5000 });
   }
 
-  async fillRegistrationForm(userData: {
-    firstName: string;
-    lastName: string;
-    email: string;
-    age: string;
-    salary: string;
-    department: string;
-  }) {
-    await this.page.fill(this.firstNameInput, userData.firstName);
-    await this.page.fill(this.lastNameInput, userData.lastName);
-    await this.page.fill(this.emailInput, userData.email);
-    await this.page.fill(this.ageInput, userData.age);
-    await this.page.fill(this.salaryInput, userData.salary);
-    await this.page.fill(this.departmentInput, userData.department);
+  async fillRegistrationForm(userData: UserFormData) {
+    await this.firstNameInput.fill(userData.firstName);
+    await this.lastNameInput.fill(userData.lastName);
+    await this.emailInput.fill(userData.email);
+    await this.ageInput.fill(userData.age);
+    await this.salaryInput.fill(userData.salary);
+    await this.departmentInput.fill(userData.department);
   }
 
   async submitForm() {
-    await this.page.click(this.submitBtn);
-    await this.page.waitForSelector(this.firstNameInput, { state: 'detached', timeout: 5000 });
+    await this.submitButton.click();
+    await this.firstNameInput.waitFor({ state: "detached", timeout: 5000 });
   }
 
   async getUserRowData(userEmail: string) {
-    const emailCell = this.page.locator(`.rt-td:has-text("${userEmail}")`);
-    if (await emailCell.count() === 0) return null;
+    const row = this.userRow(userEmail);
+    if (await row.count() === 0) return null;
 
-    const row = emailCell.locator('xpath=ancestor::div[contains(@class, "rt-tr-group")]');
-    const cells = row.locator('.rt-td');
+    const cells = row.locator(newUserSelectors.tableCell);
 
     return {
-      firstName: await cells.nth(0).textContent() || '',
-      lastName: await cells.nth(1).textContent() || '',
-      age: await cells.nth(2).textContent() || '',
-      email: await cells.nth(3).textContent() || '',
-      salary: await cells.nth(4).textContent() || '',
-      department: await cells.nth(5).textContent() || ''
+      firstName: (await cells.nth(0).textContent()) ?? "",
+      lastName: (await cells.nth(1).textContent()) ?? "",
+      age: (await cells.nth(2).textContent()) ?? "",
+      email: (await cells.nth(3).textContent()) ?? "",
+      salary: (await cells.nth(4).textContent()) ?? "",
+      department: (await cells.nth(5).textContent()) ?? "",
     };
   }
 
   async deleteUser(email: string) {
-    const deleteBtn = this.page.locator(`.rt-td:has-text("${email}")`)
-      .locator('xpath=following-sibling::div[contains(@class, "rt-td")]//span[@title="Delete"]');
-    await deleteBtn.waitFor({ state: 'visible', timeout: 5000 });
-    await deleteBtn.click();
+    const row = this.userRow(email);
+    if (await row.count() === 0) return;
+    await row.locator(newUserSelectors.deleteUserButton).click();
   }
 
   async editUser(email: string) {
-    const editBtn = this.page.locator(`.rt-td:has-text("${email}")`)
-      .locator('xpath=following-sibling::div[contains(@class, "rt-td")]//span[@title="Edit"]');
-    await editBtn.waitFor({ state: 'visible', timeout: 5000 });
-    await editBtn.click();
-    await this.page.waitForSelector(this.firstNameInput, { state: 'visible', timeout: 5000 });
+    const row = this.userRow(email);
+    if (await row.count() === 0) return;
+    await row.locator(newUserSelectors.editUserButton).click();
+    await this.firstNameInput.waitFor({ state: "visible", timeout: 5000 });
+  }
+
+  async updateUser(userData: UserFormData) {
+    await this.fillRegistrationForm(userData);
+    await this.submitForm();
   }
 
   async getUsersCount(): Promise<number> {
-    return await this.page.locator(this.resultRows).count();
+    return this.tableRows.count();
   }
 
   async searchUser(searchTerm: string) {
-    await this.page.fill('#searchBox', searchTerm);
-  }
-
-  async isUserVisible(email: string): Promise<boolean> {
-    const userRow = this.page.locator(`.rt-td:has-text("${email}")`);
-    return await userRow.isVisible();
+    await this.searchInput.fill(searchTerm);
   }
 }

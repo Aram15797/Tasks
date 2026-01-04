@@ -1,51 +1,100 @@
+import { bookStoreSelectors } from "../selectors/bookStore.selectors.js";
 import { BasePage } from "./BasePage.js";
 
-export class BookStorePage extends BasePage {
-  loginBtn = '#login';
-  searchBox = '#searchBox';
-  bookLink = (bookTitle: string) => `a:has-text("${bookTitle}")`;
-  addToCollectionBtn = 'text=Add To Your Collection';
-  profileMenu = 'text=Profile';
-  deleteBookBtn = (bookTitle: string) => 
-    `//div[text()="${bookTitle}"]/ancestor::div[contains(@class,"rt-tr-group")]//span[@title="Delete"]`;
-  confirmDeleteBtn = '#closeSmallModal-ok';
-  booksInProfile = '.rt-tbody .rt-tr-group';
+type Credentials = {
+  username: string;
+  password: string;
+};
 
-  async goto(path: string) {
-    await this.page.goto(`https://demoqa.com/${path}`);
+export class BookStorePage extends BasePage {
+  async open() {
+    await this.goto("books");
   }
 
-  async login(username: string, password: string) {
-    await this.page.click(this.loginBtn);
-    await this.page.fill('#userName', username);
-    await this.page.fill('#password', password);
-    await this.page.click('#login');
+  get loginButton() {
+    return this.page.locator(bookStoreSelectors.loginButton);
+  }
+
+  get usernameInput() {
+    return this.page.locator(bookStoreSelectors.usernameInput);
+  }
+
+  get passwordInput() {
+    return this.page.locator(bookStoreSelectors.passwordInput);
+  }
+
+  get loginSubmitButton() {
+    return this.page.locator(bookStoreSelectors.loginSubmit);
+  }
+
+  get searchInput() {
+    return this.page.locator(bookStoreSelectors.searchInput);
+  }
+
+  get addToCollectionButton() {
+    return this.page.locator(bookStoreSelectors.addToCollectionButton);
+  }
+
+  get profileMenu() {
+    return this.page.locator(bookStoreSelectors.profileMenu);
+  }
+
+  get confirmDeleteButton() {
+    return this.page.locator(bookStoreSelectors.confirmDeleteButton);
+  }
+
+  get bookRows() {
+    return this.page.locator(bookStoreSelectors.bookRows);
+  }
+
+  bookLink(title: string) {
+    return this.page.locator(bookStoreSelectors.bookLink(title));
+  }
+
+  bookRow(title: string) {
+    return this.page.locator(bookStoreSelectors.bookRow(title));
+  }
+
+  async login(credentials: Credentials) {
+    await this.loginButton.click();
+    await this.usernameInput.waitFor({ state: "visible", timeout: 5000 });
+    await this.usernameInput.fill(credentials.username);
+    await this.passwordInput.fill(credentials.password);
+    await this.loginSubmitButton.click();
   }
 
   async searchBook(bookTitle: string) {
-    await this.page.fill(this.searchBox, bookTitle);
+    await this.searchInput.fill(bookTitle);
   }
 
   async openBookDetails(bookTitle: string) {
-    await this.page.click(this.bookLink(bookTitle));
+    await this.bookLink(bookTitle).click();
   }
 
   async addBookToCollection() {
-    await this.page.once('dialog', dialog => dialog.accept());
-    await this.page.click(this.addToCollectionBtn);
+    await this.page.once("dialog", dialog => dialog.accept());
+    await this.addToCollectionButton.click();
   }
 
   async goToProfile() {
-    await this.page.click(this.profileMenu);
+    await this.profileMenu.click();
   }
 
   async deleteBookFromCollection(bookTitle: string) {
-    await this.page.once('dialog', dialog => dialog.accept());
-    await this.page.click(this.deleteBookBtn(bookTitle));
-    await this.page.click(this.confirmDeleteBtn);
+    const row = this.bookRow(bookTitle);
+    if (await row.count() === 0) return;
+    await this.page.once("dialog", dialog => dialog.accept());
+    await row.locator(bookStoreSelectors.deleteBookButton).click();
+    await this.confirmDeleteButton.click();
+  }
+
+  async isBookInProfile(bookTitle: string) {
+    const row = this.bookRow(bookTitle);
+    if ((await row.count()) === 0) return false;
+    return row.first().isVisible({ timeout: 0 });
   }
 
   async getBooksCount(): Promise<number> {
-    return await this.page.locator(this.booksInProfile).count();
+    return this.bookRows.count();
   }
 }

@@ -1,20 +1,54 @@
+import { textBoxSelectors } from "../selectors/textBox.selectors.js";
 import { BasePage } from "./BasePage.js";
 
-export class TextBoxPage extends BasePage {
-  fullName = '#userName';
-  email = '#userEmail';
-  currentAddress = '#currentAddress';
-  permanentAddress = '#permanentAddress';
-  submitBtn = '#submit';
+type TextBoxFormData = {
+  fullName: string;
+  email: string;
+  currentAddress: string;
+  permanentAddress: string;
+};
 
-  async fillForm(name: string, email: string) {
-    await this.page.fill(this.fullName, name);
-    await this.page.fill(this.email, email);
-    await this.page.fill(this.currentAddress, "Some address");
-    await this.page.fill(this.permanentAddress, "Another address");
+export class TextBoxPage extends BasePage {
+  async open() {
+    await this.goto("text-box");
+  }
+
+  get fullNameInput() {
+    return this.page.locator(textBoxSelectors.fullNameInput);
+  }
+
+  get emailInput() {
+    return this.page.locator(textBoxSelectors.emailInput);
+  }
+
+  get currentAddressInput() {
+    return this.page.locator(textBoxSelectors.currentAddressInput);
+  }
+
+  get permanentAddressInput() {
+    return this.page.locator(textBoxSelectors.permanentAddressInput);
+  }
+
+  get submitButton() {
+    return this.page.locator(textBoxSelectors.submitButton);
+  }
+
+  get nameOutput() {
+    return this.page.locator(textBoxSelectors.nameOutput);
+  }
+
+  get emailOutput() {
+    return this.page.locator(textBoxSelectors.emailOutput);
+  }
+
+  async fillForm(formData: TextBoxFormData) {
+    await this.fullNameInput.fill(formData.fullName);
+    await this.emailInput.fill(formData.email);
+    await this.currentAddressInput.fill(formData.currentAddress);
+    await this.permanentAddressInput.fill(formData.permanentAddress);
   }
 
   async submit() {
-    await this.page.click(this.submitBtn);
+    await this.submitButton.click();
   }
 }

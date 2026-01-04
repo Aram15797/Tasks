@@ -1,27 +1,34 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "../fixtures/baseTest.js";
 import { BookStorePage } from "../pages/BookStorePage.js";
+import { getBookStoreCredentials, getBookTitles } from "../utils/storageData.js";
 
 test.describe("Book Store Tests", () => {
   test("Book Store: Add book to collection", async ({ page }) => {
     const bookStore = new BookStorePage(page);
-    const testBook = "Git Pocket Guide";
     
-    await bookStore.goto("books");
-    await bookStore.login("testuser", "Test123!");
+    await bookStore.open();
+    const bookStoreCredentials = await getBookStoreCredentials(page);
+    const bookTitles = await getBookTitles(page);
+    const testBook = bookTitles.gitPocketGuide;
+
+    await bookStore.login(bookStoreCredentials);
     await bookStore.searchBook(testBook);
     await bookStore.openBookDetails(testBook);
     await bookStore.addBookToCollection();
     
     await bookStore.goToProfile();
-    await expect(page.locator(`.rt-tbody .rt-tr-group:has-text("${testBook}")`)).toBeVisible();
+    await expect(bookStore.bookRow(testBook)).toBeVisible();
   });
 
   test("Book Store: Remove book from collection", async ({ page }) => {
     const bookStore = new BookStorePage(page);
-    const testBook = "Learning JavaScript Design Patterns";
     
-    await bookStore.goto("books");
-    await bookStore.login("testuser", "Test123!");
+    await bookStore.open();
+    const bookStoreCredentials = await getBookStoreCredentials(page);
+    const bookTitles = await getBookTitles(page);
+    const testBook = bookTitles.jsDesignPatterns;
+
+    await bookStore.login(bookStoreCredentials);
     await bookStore.searchBook(testBook);
     await bookStore.openBookDetails(testBook);
     await bookStore.addBookToCollection();
@@ -31,8 +38,7 @@ test.describe("Book Store Tests", () => {
     
     await bookStore.deleteBookFromCollection(testBook);
     
-    const booksAfter = await bookStore.getBooksCount();
-    expect(booksAfter).toBeLessThan(booksBefore);
-    await expect(page.locator(`.rt-tbody .rt-tr-group:has-text("${testBook}")`)).not.toBeVisible();
+    await expect(bookStore.bookRows).toHaveCount(booksBefore - 1);
+    await expect(bookStore.bookRow(testBook)).toHaveCount(0);
   });
 });

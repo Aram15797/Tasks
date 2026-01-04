@@ -1,13 +1,16 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "../fixtures/baseTest.js";
 import { TextBoxPage } from "../pages/TextBoxPage.js";
+import { getTextBoxData } from "../utils/storageData.js";
 
 test("TextBox: fill form", async ({ page }) => {
   const textBox = new TextBoxPage(page);
 
-  await textBox.goto("text-box");
-  await textBox.fillForm("Aram", "aram@example.com");
+  await textBox.open();
+  const textBoxData = await getTextBoxData(page);
+
+  await textBox.fillForm(textBoxData);
   await textBox.submit();
 
-  await expect(page.locator("#name")).toContainText("Aram");
-  await expect(page.locator("#email")).toContainText("aram@example.com");
+  await expect(textBox.nameOutput).toHaveText(new RegExp(textBoxData.fullName));
+  await expect(textBox.emailOutput).toHaveText(new RegExp(textBoxData.email));
 });

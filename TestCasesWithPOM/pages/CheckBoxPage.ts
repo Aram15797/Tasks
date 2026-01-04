@@ -1,14 +1,33 @@
+import { checkBoxSelectors } from "../selectors/checkBox.selectors.js";
 import { BasePage } from "./BasePage.js";
 
 export class CheckBoxPage extends BasePage {
-  expandAllBtn = 'button[aria-label="Expand all"]';
-  homeCheckbox = 'label[for="tree-node-home"] span.rct-checkbox';
-
-  async expandAll() {
-    await this.page.click(this.expandAllBtn);
+  async open() {
+    await this.goto("checkbox");
   }
 
-  async clickHome() {
-    await this.page.click(this.homeCheckbox);
+  get expandAllButton() {
+    return this.page.locator(checkBoxSelectors.expandAllButton);
+  }
+
+  get homeCheckbox() {
+    return this.page.locator(checkBoxSelectors.homeCheckbox);
+  }
+
+  get result() {
+    return this.page.locator(checkBoxSelectors.result);
+  }
+
+  async openAndExpandTree() {
+    await this.open();
+    await this.expandAll();
+  }
+
+  async expandAll() {
+    await this.expandAllButton.click();
+  }
+
+  async selectHome() {
+    await this.homeCheckbox.click();
   }
 }

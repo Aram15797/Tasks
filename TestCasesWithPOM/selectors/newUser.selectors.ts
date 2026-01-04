@@ -1,0 +1,15 @@
+export const newUserSelectors = {
+  addUserButton: "#addNewRecordButton",
+  firstNameInput: "#firstName",
+  lastNameInput: "#lastName",
+  emailInput: "#userEmail",
+  ageInput: "#age",
+  salaryInput: "#salary",
+  departmentInput: "#department",
+  submitButton: "#submit",
+  searchInput: "#searchBox",
+  tableRow: ".rt-tr-group",
+  tableCell: ".rt-td",
+  deleteUserButton: 'span[title="Delete"]',
+  editUserButton: 'span[title="Edit"]',
+};

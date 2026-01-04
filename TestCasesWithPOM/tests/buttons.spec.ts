@@ -1,13 +1,14 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "../fixtures/baseTest.js";
 import { ButtonsPage } from "../pages/ButtonsPage.js";
+import { getButtonsTexts } from "../utils/storageData.js";
 
 test("Buttons: double click", async ({ page }) => {
   const btn = new ButtonsPage(page);
 
-  await btn.goto("buttons");
+  await btn.open();
+  const buttonsTexts = await getButtonsTexts(page);
+
   await btn.doubleClick();
 
-  await expect(page.locator(btn.doubleClickMsg)).toHaveText(
-    "You have done a double click"
-  );
+  await expect(btn.doubleClickMessage).toHaveText(buttonsTexts.doubleClickMessage);
 });

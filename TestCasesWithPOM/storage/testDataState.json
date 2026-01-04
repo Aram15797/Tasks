@@ -1,0 +1,34 @@
+{
+  "cookies": [],
+  "origins": [
+    {
+      "origin": "https://demoqa.com",
+      "localStorage": [
+        {
+          "name": "users",
+          "value": "{\"alexJohnson\":{\"firstName\":\"Alex\",\"lastName\":\"Johnson\",\"email\":\"alex.johnson@example.com\",\"age\":\"28\",\"salary\":\"75000\",\"department\":\"Engineering\"},\"sarahConnor\":{\"firstName\":\"Sarah\",\"lastName\":\"Connor\",\"email\":\"sarah.connor@example.com\",\"age\":\"35\",\"salary\":\"65000\",\"department\":\"Security\"},\"sarahConnorUpdated\":{\"firstName\":\"Sarah Updated\",\"lastName\":\"Connor\",\"email\":\"sarah.connor@example.com\",\"age\":\"36\",\"salary\":\"65000\",\"department\":\"IT Security\"},\"markTemporary\":{\"firstName\":\"Mark\",\"lastName\":\"Temporary\",\"email\":\"mark.temp@example.com\",\"age\":\"25\",\"salary\":\"45000\",\"department\":\"Temporary\"},\"johnDoe\":{\"firstName\":\"John\",\"lastName\":\"Doe\",\"email\":\"john.doe@test.com\",\"age\":\"30\",\"salary\":\"50000\",\"department\":\"QA\"},\"janeSmith\":{\"firstName\":\"Jane\",\"lastName\":\"Smith\",\"email\":\"jane.smith@test.com\",\"age\":\"28\",\"salary\":\"55000\",\"department\":\"Dev\"},\"webTablesDefault\":{\"firstName\":\"John\",\"lastName\":\"Doe\",\"email\":\"john@doe.com\",\"age\":\"30\",\"salary\":\"5000\",\"department\":\"QA\"}}"
+        },
+        {
+          "name": "textBoxData",
+          "value": "{\"fullName\":\"Aram Example\",\"email\":\"aram@example.com\",\"currentAddress\":\"Some address\",\"permanentAddress\":\"Another address\"}"
+        },
+        {
+          "name": "bookStoreCredentials",
+          "value": "{\"username\":\"testuser\",\"password\":\"Test123!\"}"
+        },
+        {
+          "name": "bookTitles",
+          "value": "{\"gitPocketGuide\":\"Git Pocket Guide\",\"jsDesignPatterns\":\"Learning JavaScript Design Patterns\"}"
+        },
+        {
+          "name": "dynamicPropertiesData",
+          "value": "{\"finalTextColor\":\"rgb(220, 53, 69)\"}"
+        },
+        {
+          "name": "buttonsTexts",
+          "value": "{\"doubleClickMessage\":\"You have done a double click\"}"
+        }
+      ]
+    }
+  ]
+}
